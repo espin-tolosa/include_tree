@@ -16,4 +16,6 @@ logs
 
 # Buids
 build/
-objects/
+
+# Environment
+.env

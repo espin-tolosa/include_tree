@@ -1,42 +1,37 @@
-BIN=include-tree
+include .env
+export $(shell sed 's/=.*//' .env)
 
-OBJS=main.o
+O_TARGET := obj
+E_TARGET := pst
 
-OBJDIR=obj
-SRCDIR=src
-INCDIR=include
-BINDIR=build
-PSTDIR=post
+SRC_HASH := $(shell find src -type f -exec cat {} \; | sha1sum | head -c 8)
+BUILD_TARGET := $(BINDIR)/$(SRC_HASH)/$(TARGET)
 
-CC=gcc
+$(shell mkdir -p $(BUILD_TARGET)/$(O_TARGET))
+$(shell mkdir -p $(BUILD_TARGET)/$(E_TARGET))
 
-CLEVEL=-g
+CFLAGS := $(addprefix -, std=$(STD) $(TARGET) $(WBASE) $(WCOMP))
 
-STD=-std=c99
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+OBJECTS = $(patsubst $(SRCDIR)/%.c,$(BUILD_TARGET)/$(O_TARGET)/%.o,$(SOURCES))
+POSTPRO = $(patsubst $(SRCDIR)/%.c,$(BUILD_TARGET)/$(E_TARGET)/%.c,$(SOURCES))
 
-# Base warnings common for all projects
-WBASE= -Wall -Wextra
 
-# Warnings able to detect Non MISRA-C 2012 Compliant
-WCOMP= -Wmissing-braces
+# ------------------------------------------------------------------------------
+# RULES
+# ------------------------------------------------------------------------------
 
-#
-CFLAGS = $(CLEVEL) $(WBASE) $(WCOMP)
+all: $(BUILD_TARGET)/$(BIN)
 
-all: $(BIN)
+$(BUILD_TARGET)/$(BIN): $(POSTPRO)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $@
 
-$(BIN): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
+$(BUILD_TARGET)/$(E_TARGET)/%.c: $(SRCDIR)/%.c $(OBJECTS)
+	$(CC) $(CFLAGS) -E $< -o $@
 
-$(OBJDIR)/%.o: $(PSTDIR)/%.c
+$(BUILD_TARGET)/$(O_TARGET)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(PSTDIR)/%.c:
-	$(CC) -E $< > $@
-
 clean:
-	$(RM) -r $(BUILDDIR) $(OBJDIR) $(PSTDIR)
-
-
-
+	$(RM) -r $(BINDIR)/$(SRC_HASH) $(BIN)
 
