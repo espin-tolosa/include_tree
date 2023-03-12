@@ -7,6 +7,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <gtk/gtk.h>
+#include "btype.h"
+#include "exp.h"
 
 
 //typedef void * (*malloc_def) (size_t);
