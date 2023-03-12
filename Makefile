@@ -31,7 +31,7 @@ DEPS = $(shell find $(BUILD_TARGET)/$(E_TARGET) -iname "*.c" -exec cat {} \; | g
 all: $(BUILD_TARGET)/$(BIN)
 
 $(BUILD_TARGET)/$(BIN): $(POSTPRO)
-	$(CC) $(CFLAGS) $(OBJECTS) $(LIBRARY) -o $@
+	$(CC) $(CFLAGS) $(OBJECTS) -Wl,-rpath ./include $(LIBRARY) -o $@
 
 $(BUILD_TARGET)/$(E_TARGET)/%.c: $(SRCDIR)/%.c $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDE) -E $< -o $@
@@ -51,3 +51,7 @@ current_e:
 current_bin:
 	@echo "$(BIN)"
 
+#LD=./include
+
+#gcc main.c -o dynamic.out -L ./include -Wl,-rpath $LD -pthread
+#gcc main.c -o static.out -static -L ./include -Wl,-rpath $LD -pthread
