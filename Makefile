@@ -51,6 +51,8 @@ current_e:
 current_bin:
 	@echo "$(BIN)"
 
+push:
+	git push all master
 #LD=./include
 
 #gcc main.c -o dynamic.out -L ./include -Wl,-rpath $LD -pthread
