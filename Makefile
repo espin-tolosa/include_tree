@@ -53,6 +53,9 @@ current_bin:
 
 push:
 	git push all master
+
+fetch:
+	git fetch --all
 #LD=./include
 
 #gcc main.c -o dynamic.out -L ./include -Wl,-rpath $LD -pthread
